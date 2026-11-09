@@ -6,7 +6,7 @@ export const de: Dict = {
     description:
       'Beschreibe per Text oder Sprache, was dir fehlt. Symtora ordnet deine Angaben ein, schätzt die Dringlichkeit und zeigt mögliche Ursachen und nächste Schritte.',
   },
-  nav: { features: 'Funktionen', emergency: 'Notfall', screens: 'Screens', github: 'GitHub' },
+  nav: { features: 'Funktionen', emergency: 'Notfall', screens: 'Screens', how: 'Ablauf', github: 'GitHub' },
   a11y: {
     theme: 'Hell- und Dunkelmodus umschalten',
     lang: 'Sprache',
@@ -21,6 +21,25 @@ export const de: Dict = {
     secondary: 'Quellcode auf GitHub',
     badges: ['Deutsch · English · Français', 'Hell & dunkel', 'Selbst gehostete KI'],
   },
+  sections: {
+    trust: { kicker: 'Grundsätze', title: 'Auf Vertrauen gebaut.', sub: 'Drei Versprechen, die die App hält — eingebaut, nicht einstellbar.' },
+    features: { kicker: 'Funktionen', title: 'Vom Symptom zum nächsten Schritt.', sub: 'Scroll durch, was Symtora kann.' },
+    emergency: { kicker: 'Sicherheit' },
+    screens: { sub: 'Jeder Screen der App — wähle einen aus oder lass ihn laufen.' },
+    how: { title: 'So funktioniert’s.', sub: 'Drei Schritte, ein selbst gehostetes Modell, keine fremde Cloud.' },
+  },
+  stats: [
+    { n: 3, label: 'Sprachen' },
+    { n: 11, label: 'Screens' },
+    { n: 4, label: 'Notrufnummern' },
+    { n: 0, label: 'Aufrufe fremder KI' },
+  ],
+  cta: {
+    title: 'Neugierig, wie es gebaut ist?',
+    body: 'App, API und Modell-Setup — der gesamte Quellcode ist offen auf GitHub.',
+    button: 'Auf GitHub ansehen',
+  },
+  footerNav: { product: 'Produkt', project: 'Projekt', source: 'Quellcode', license: 'MIT-Lizenz' },
   promises: {
     kicker: 'Drei Versprechen',
     items: [

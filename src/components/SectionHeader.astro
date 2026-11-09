@@ -1,0 +1,27 @@
+---
+// One heading pattern for every section: pill kicker, title, one-line subtitle.
+interface Props {
+  kicker: string;
+  title: string;
+  sub?: string;
+  align?: 'center' | 'left';
+  tone?: 'default' | 'onDark';
+}
+const { kicker, title, sub, align = 'center', tone = 'default' } = Astro.props;
+const dark = tone === 'onDark';
+---
+<header class:list={['reveal max-w-2xl', align === 'center' ? 'mx-auto text-center' : '']}>
+  <span
+    class:list={[
+      'kicker inline-flex items-center gap-2 rounded-full px-3 py-1.5',
+      dark ? 'bg-white/10 text-white/70' : 'bg-badge text-accent',
+    ]}
+  >
+    <span class:list={['size-1.5 rounded-full', dark ? 'bg-sky' : 'bg-accent']}></span>
+    {kicker}
+  </span>
+  <h2 class:list={['mt-4 text-3xl font-extrabold leading-[1.1] tracking-tight sm:text-[44px]', dark ? 'text-white' : 'text-strong']}>
+    {title}
+  </h2>
+  {sub && <p class:list={['mt-4 text-base sm:text-lg', dark ? 'text-white/75' : 'text-muted']}>{sub}</p>}
+</header>

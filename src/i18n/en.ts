@@ -4,7 +4,7 @@ export const en = {
     description:
       'Describe what’s wrong by text or voice. Symtora sorts your input, rates the urgency and shows possible causes and next steps.',
   },
-  nav: { features: 'Features', emergency: 'Emergency', screens: 'Screens', github: 'GitHub' },
+  nav: { features: 'Features', emergency: 'Emergency', screens: 'Screens', how: 'How it works', github: 'GitHub' },
   a11y: {
     theme: 'Toggle light and dark mode',
     lang: 'Language',
@@ -19,6 +19,25 @@ export const en = {
     secondary: 'Source on GitHub',
     badges: ['English · Deutsch · Français', 'Light & dark', 'Self-hosted AI'],
   },
+  sections: {
+    trust: { kicker: 'Principles', title: 'Built on trust.', sub: 'Three promises the app keeps — by design, not by setting.' },
+    features: { kicker: 'Features', title: 'From symptom to next step.', sub: 'Scroll through what Symtora does.' },
+    emergency: { kicker: 'Safety' },
+    screens: { sub: 'Every screen of the app — pick one or let it play.' },
+    how: { title: 'How it works.', sub: 'Three steps, one self-hosted model, no third-party cloud.' },
+  },
+  stats: [
+    { n: 3, label: 'Languages' },
+    { n: 11, label: 'Screens' },
+    { n: 4, label: 'Emergency numbers' },
+    { n: 0, label: 'Third-party AI calls' },
+  ],
+  cta: {
+    title: 'Curious how it’s built?',
+    body: 'App, API and model setup — the full source is open on GitHub.',
+    button: 'View on GitHub',
+  },
+  footerNav: { product: 'Product', project: 'Project', source: 'Source code', license: 'MIT license' },
   promises: {
     kicker: 'Three promises',
     items: [

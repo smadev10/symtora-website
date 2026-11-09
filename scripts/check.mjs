@@ -40,7 +40,13 @@ for (const lang of ['en', 'de']) {
         for (let y = 0; y < document.body.scrollHeight; y += 500) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); }
         for (const el of document.querySelectorAll('.reveal')) el.classList.add('in');
       });
+      // Settle on each section with lazy media, as a reader would.
+      for (const id of ['features', 'emergency', 'screens']) {
+        await page.$eval(`#${id}`, (e) => e.scrollIntoView({ block: 'center' }));
+        await page.waitForTimeout(400);
+      }
       await page.waitForLoadState('networkidle');
+      await page.waitForFunction(() => [...document.images].every((i) => !i.checkVisibility() || i.complete), null, { timeout: 8000 }).catch(() => {});
 
       const badImgs = await page.$$eval('img', (imgs) => imgs.filter((i) => i.checkVisibility() && !(i.complete && i.naturalWidth > 0)).map((i) => i.src));
       check(badImgs.length === 0, `${label}: visible images loaded ${badImgs.join(' ')}`);

@@ -1,16 +1,19 @@
 ---
 import { dict, REPO_URL, type Lang } from '../i18n';
+import FeatureStory from './FeatureStory.astro';
 import Header from './Header.astro';
 import Icon from './Icon.astro';
 import Logo from './Logo.astro';
 import Phone from './Phone.astro';
 import ScreenTour from './ScreenTour.astro';
+import SectionHeader from './SectionHeader.astro';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = dict[lang];
 
 const promiseIcons = ['shield', 'info', 'trash'] as const;
+const stepIcons = ['mic', 'shield', 'check'] as const;
 const stack = ['Expo · React Native', 'ASP.NET Core', 'PostgreSQL', 'Ollama', 'Whisper', 'Docker'];
 const titleWords = t.hero.title.split(' ');
 const year = new Date().getFullYear();
@@ -18,44 +21,53 @@ const year = new Date().getFullYear();
 <Header lang={lang} />
 
 <main id="main" class="overflow-x-clip">
-  <!-- Hero -->
-  <section class="relative overflow-hidden rounded-b-[36px] bg-navy text-white sm:rounded-b-[48px]">
+  <!-- ───── Hero ───── -->
+  <section class="hero relative overflow-hidden rounded-b-[36px] bg-navy text-white sm:rounded-b-[56px]">
+    <div class="hero-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
+    <div class="hero-glow pointer-events-none absolute left-1/2 top-[58%] size-[900px] -translate-x-1/2 rounded-full" aria-hidden="true"></div>
 
-    <div class="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-14 sm:px-6 md:grid-cols-[1.1fr_1fr] md:pb-24 md:pt-20">
-      <div>
-        <p class="enter kicker text-white/60" style="--d:100ms">{t.hero.kicker}</p>
-        <h1 class="mt-4 text-[40px] font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
-          {titleWords.map((w, i) => (
-            <><span class="word" style={`--d:${200 + i * 90}ms`}>{w}</span>{i < titleWords.length - 1 ? ' ' : ''}</>
-          ))}
-        </h1>
-        <p class="enter mt-5 max-w-xl text-lg leading-relaxed text-[#cfe3f0]" style="--d:500ms">{t.hero.lead}</p>
+    <div class="relative mx-auto max-w-6xl px-4 pt-16 text-center sm:px-6 md:pt-24">
+      <span class="enter kicker inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-white/75" style="--d:80ms">
+        <span class="size-1.5 animate-pulse rounded-full bg-sky"></span>
+        {t.hero.kicker}
+      </span>
+      <h1 class="mx-auto mt-6 max-w-4xl text-[42px] font-extrabold leading-[1.02] tracking-tight sm:text-7xl">
+        {titleWords.map((w, i) => (
+          <><span class="word" style={`--d:${180 + i * 90}ms`}>{w}</span>{i < titleWords.length - 1 ? ' ' : ''}</>
+        ))}
+      </h1>
+      <p class="enter mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-[#cfe3f0] sm:text-xl" style="--d:480ms">{t.hero.lead}</p>
 
-        <div class="enter mt-8 flex flex-wrap gap-3" style="--d:650ms">
-          <a href="#features" class="btn bg-sky text-[#142939] hover:bg-white">
-            <Icon name="play" size={16} />
-            {t.hero.cta}
-          </a>
-          <a href={REPO_URL} target="_blank" rel="noopener" class="btn border border-white/20 text-white hover:bg-white/10">
-            <Icon name="github" size={18} />
-            {t.hero.secondary}
-          </a>
-        </div>
-
-        <ul class="mt-8 flex flex-wrap gap-2">
-          {t.hero.badges.map((b, i) => (
-            <li class="enter rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-[#cfe3f0]" style={`--d:${800 + i * 90}ms`}>{b}</li>
-          ))}
-        </ul>
+      <div class="enter mt-9 flex flex-wrap justify-center gap-3" style="--d:620ms">
+        <a href="#features" class="btn bg-sky text-[#142939] hover:bg-white">
+          <Icon name="play" size={16} />
+          {t.hero.cta}
+        </a>
+        <a href={REPO_URL} target="_blank" rel="noopener" class="btn border border-white/20 text-white hover:bg-white/10">
+          <Icon name="github" size={18} />
+          {t.hero.secondary}
+        </a>
       </div>
 
-      <div class="relative mx-auto w-full max-w-[400px] md:mr-0">
-        <div class="enter absolute -left-4 top-[22%] hidden w-[60%] sm:block md:-left-20" style="--d:700ms">
-          <div class="float-slow">
-            <Phone lang={lang} shot="assessment" alt={t.screens.items.assessment} class="-rotate-6 opacity-90" eager />
+      <ul class="mt-7 flex flex-wrap justify-center gap-2">
+        {t.hero.badges.map((b, i) => (
+          <li class="enter rounded-full border border-white/10 px-3 py-1.5 text-xs font-semibold text-[#cfe3f0]" style={`--d:${760 + i * 80}ms`}>{b}</li>
+        ))}
+      </ul>
+
+      <!-- Phone fan -->
+      <div class="relative mx-auto mt-14 flex h-[430px] max-w-[760px] items-start justify-center sm:h-[540px] md:mt-16 md:h-[600px]">
+        <div class="fan-side fan-left enter absolute top-16 left-1/2 w-[44%] max-w-[230px] sm:top-20" style="--d:900ms">
+          <div class="float-slow" data-parallax="0.05">
+            <Phone lang={lang} shot="emergency" alt={t.screens.items.emergency} class="-rotate-[8deg] opacity-95" eager />
           </div>
         </div>
-        <div class="enter relative mx-auto w-[78%] sm:mr-0 sm:w-[72%]" style="--d:350ms">
+        <div class="fan-side fan-right enter absolute top-16 left-1/2 w-[44%] max-w-[230px] sm:top-20" style="--d:1000ms">
+          <div class="float-slow" data-parallax="0.05">
+            <Phone lang={lang} shot="assessment" alt={t.screens.items.assessment} class="rotate-[8deg] opacity-95" eager />
+          </div>
+        </div>
+        <div class="enter relative z-10 w-[54%] max-w-[270px]" style="--d:700ms">
           <div class="float">
             <Phone lang={lang} video="flow" alt={t.a11y.video} />
           </div>
@@ -64,73 +76,45 @@ const year = new Date().getFullYear();
     </div>
   </section>
 
-  <!-- Promises -->
-  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20">
-    <p class="kicker reveal text-center text-muted">{t.promises.kicker}</p>
-    <div class="stagger reveal mt-6 grid gap-4 md:grid-cols-3">
-      {t.promises.items.map((p, i) => (
-        <div class="card lift group flex items-start gap-4 p-5">
-          <div class="grid size-10 shrink-0 place-items-center rounded-[12px] bg-badge text-accent transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
-            <Icon name={promiseIcons[i]} size={20} />
-          </div>
-          <div>
-            <h2 class="text-[15px] font-bold text-strong">{p.title}</h2>
-            <p class="mt-1 text-sm leading-relaxed text-muted">{p.body}</p>
-          </div>
+  <!-- ───── Stats ───── -->
+  <section class="relative z-10 mx-auto -mt-12 max-w-5xl px-4 sm:px-6">
+    <dl class="stagger reveal grid grid-cols-2 overflow-hidden rounded-[22px] bg-card shadow-[var(--shadow)] md:grid-cols-4">
+      {t.stats.map((s) => (
+        <div class="flex flex-col-reverse border-divider px-5 py-6 text-center [&:nth-child(odd)]:border-r md:border-r md:last:border-r-0 [&:nth-child(-n+2)]:border-b md:[&:nth-child(-n+2)]:border-b-0">
+          <dt class="mt-1 text-xs font-semibold uppercase tracking-wider text-muted">{s.label}</dt>
+          <dd class="text-4xl font-extrabold tabular-nums text-strong" data-count={s.n}>{s.n}</dd>
         </div>
+      ))}
+    </dl>
+  </section>
+
+  <!-- ───── Principles ───── -->
+  <section class="mx-auto max-w-6xl px-4 pt-24 sm:px-6 md:pt-32">
+    <SectionHeader kicker={t.sections.trust.kicker} title={t.sections.trust.title} sub={t.sections.trust.sub} />
+    <div class="stagger reveal mt-12 grid gap-4 md:grid-cols-3">
+      {t.promises.items.map((p, i) => (
+        <article class="card lift group relative overflow-hidden p-6">
+          <span class="absolute right-5 top-4 text-5xl font-extrabold text-badge transition-colors group-hover:text-accent-soft" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <div class="relative grid size-12 place-items-center rounded-[14px] bg-accent text-accent-text transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+            <Icon name={promiseIcons[i]} size={22} />
+          </div>
+          <h3 class="relative mt-5 text-lg font-bold text-strong">{p.title}</h3>
+          <p class="relative mt-2 text-sm leading-relaxed text-muted">{p.body}</p>
+        </article>
       ))}
     </div>
   </section>
 
-  <!-- Features -->
-  <section id="features" class="mx-auto max-w-6xl scroll-mt-20 space-y-24 px-4 pb-8 sm:px-6 md:space-y-32">
-    {t.features.map((f, i) => {
-      const flip = i % 2 === 1;
-      return (
-        <article id={f.id} class:list={['grid items-center gap-10 md:grid-cols-2 md:gap-16', flip && 'md:[&>*:first-child]:order-2']}>
-          <div class:list={['reveal max-w-md', flip ? 'from-right' : 'from-left']}>
-            <p class="kicker flex items-center gap-2 text-muted">
-              <span class="grid size-6 place-items-center rounded-[8px] bg-accent text-[10px] text-accent-text">{String(i + 1).padStart(2, '0')}</span>
-              {f.kicker}
-            </p>
-            <h2 class="mt-3 text-3xl font-extrabold leading-tight tracking-tight text-strong sm:text-[40px]">{f.title}</h2>
-            <p class="mt-4 text-base leading-relaxed text-body">{f.body}</p>
-          </div>
+  <!-- ───── Features (scroll story) ───── -->
+  <FeatureStory lang={lang} />
 
-          <div class="reveal zoom relative mx-auto flex w-full max-w-[460px] justify-center">
-            <div class="absolute inset-x-6 top-10 bottom-4 -z-10 rounded-[40px] bg-badge" data-parallax="-0.06" aria-hidden="true"></div>
-            <div class="flex w-full justify-center" data-parallax="0.05">
-              {'video' in f && f.video ? (
-                <div class="w-[64%] max-w-[270px]" data-tilt>
-                  <Phone lang={lang} video={f.video} alt={f.title} />
-                </div>
-              ) : f.media && f.media.length > 1 ? (
-                <div class="relative flex w-full justify-center" data-tilt>
-                  <Phone lang={lang} shot={f.media[0]} alt={f.title} class="w-[52%] max-w-[240px] -rotate-3" />
-                  <div class="-ml-[10%] mt-12 w-[52%] max-w-[240px]" data-parallax="0.08">
-                    <Phone lang={lang} shot={f.media[1]} alt={f.title} class="rotate-3" />
-                  </div>
-                </div>
-              ) : (
-                <div class="w-[64%] max-w-[270px]" data-tilt>
-                  <Phone lang={lang} shot={f.media?.[0]} alt={f.title} />
-                </div>
-              )}
-            </div>
-          </div>
-        </article>
-      );
-    })}
-  </section>
-
-  <!-- Emergency -->
-  <section id="emergency" class="mx-auto mt-28 max-w-6xl scroll-mt-20 px-4 sm:px-6">
-    <div class="reveal zoom overflow-hidden rounded-[30px] bg-alarm-deep text-white">
-      <div class="grid items-center gap-10 p-6 sm:p-10 md:grid-cols-[1.3fr_1fr] md:p-14">
+  <!-- ───── Emergency ───── -->
+  <section id="emergency" class="mx-auto max-w-6xl scroll-mt-20 px-4 sm:px-6">
+    <div class="reveal zoom relative overflow-hidden rounded-[30px] bg-alarm-deep text-white">
+      <div class="emergency-glow pointer-events-none absolute -right-40 -top-40 size-[520px] rounded-full" aria-hidden="true"></div>
+      <div class="relative grid items-center gap-10 p-6 sm:p-10 md:grid-cols-[1.3fr_1fr] md:p-14">
         <div>
-          <p class="kicker text-white/60">{t.emergency.kicker}</p>
-          <h2 class="mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-[40px]">{t.emergency.title}</h2>
-          <p class="mt-4 max-w-md text-white/80">{t.emergency.body}</p>
+          <SectionHeader kicker={t.sections.emergency.kicker} title={t.emergency.title} sub={t.emergency.body} align="left" tone="onDark" />
           <div class="stagger reveal mt-8 grid gap-3 sm:grid-cols-2">
             {t.emergency.numbers.map((n, i) => (
               <div class="flex cursor-default select-none items-center gap-4 rounded-[18px] bg-white p-4 text-[#142939]">
@@ -152,57 +136,138 @@ const year = new Date().getFullYear();
     </div>
   </section>
 
-  <!-- Screen tour -->
+  <!-- ───── Screen tour ───── -->
   <ScreenTour lang={lang} />
 
-  <!-- How it works -->
-  <section class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-    <p class="kicker reveal text-muted">{t.how.kicker}</p>
-    <div class="reveal relative mt-6">
-      <div class="absolute left-[16%] right-[16%] top-1/2 hidden h-[2px] -translate-y-1/2 overflow-hidden rounded-full bg-divider md:block" aria-hidden="true">
-        <div class="connector h-full w-full bg-accent"></div>
+  <!-- ───── How it works ───── -->
+  <section id="how" class="scroll-mt-20 border-y border-divider bg-card/60 py-24 md:py-32">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <SectionHeader kicker={t.how.kicker} title={t.sections.how.title} sub={t.sections.how.sub} />
+      <div class="reveal relative mt-14">
+        <div class="absolute left-[16.6%] right-[16.6%] top-6 hidden h-[2px] overflow-hidden rounded-full bg-divider md:block" aria-hidden="true">
+          <div class="connector h-full w-full bg-accent"></div>
+        </div>
+        <ol class="stagger reveal relative grid gap-10 md:grid-cols-3 md:gap-6">
+          {t.how.steps.map((s, i) => (
+            <li class="flex flex-col items-center text-center">
+              <span class="relative grid size-12 place-items-center rounded-[14px] bg-accent text-accent-text shadow-[0_0_0_8px_var(--bg)]">
+                <Icon name={stepIcons[i]} size={20} />
+                <span class="absolute -right-2 -top-2 grid size-5 place-items-center rounded-full bg-card text-[10px] font-extrabold text-strong shadow">{i + 1}</span>
+              </span>
+              <span class="mt-5 max-w-[16rem] text-lg font-bold text-strong">{s}</span>
+            </li>
+          ))}
+        </ol>
       </div>
-      <ol class="stagger reveal relative grid gap-4 md:grid-cols-3">
-        {t.how.steps.map((s, i) => (
-          <li class="card lift flex items-center gap-4 p-5">
-            <span class="grid size-10 shrink-0 place-items-center rounded-[12px] bg-accent text-sm font-extrabold text-accent-text">{i + 1}</span>
-            <span class="font-bold text-strong">{s}</span>
-          </li>
-        ))}
-      </ol>
-    </div>
-    <div class="stagger reveal mt-8 flex flex-wrap items-center gap-2">
-      <span class="mr-2 text-sm font-semibold text-muted">{t.how.stack}</span>
-      {stack.map((s) => <span class="rounded-full bg-badge px-3 py-1.5 text-xs font-semibold text-body transition-colors hover:bg-accent hover:text-accent-text">{s}</span>)}
+
+      <div class="stagger reveal mx-auto mt-14 flex max-w-3xl flex-wrap items-center justify-center gap-2">
+        <span class="mr-1 text-sm font-semibold text-muted">{t.how.stack}</span>
+        {stack.map((s) => <span class="rounded-full border border-divider bg-card px-3 py-1.5 text-xs font-semibold text-body transition-colors hover:border-accent hover:bg-accent hover:text-accent-text">{s}</span>)}
+      </div>
     </div>
   </section>
 
-  <!-- Disclaimer -->
-  <section class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
-    <div class="disclaimer reveal flex items-start gap-3 rounded-[14px] border p-4 text-sm leading-relaxed">
+  <!-- ───── CTA ───── -->
+  <section class="mx-auto max-w-6xl px-4 py-24 sm:px-6 md:py-28">
+    <div class="reveal zoom relative overflow-hidden rounded-[30px] bg-navy px-6 py-14 text-center text-white sm:px-12 md:py-20">
+      <div class="hero-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
+      <div class="relative">
+        <Logo size={56} class="mx-auto" />
+        <h2 class="mx-auto mt-6 max-w-2xl text-3xl font-extrabold tracking-tight sm:text-[44px] sm:leading-[1.1]">{t.cta.title}</h2>
+        <p class="mx-auto mt-4 max-w-xl text-white/75 sm:text-lg">{t.cta.body}</p>
+        <a href={REPO_URL} target="_blank" rel="noopener" class="btn mt-8 bg-sky text-[#142939] hover:bg-white">
+          <Icon name="github" size={18} />
+          {t.cta.button}
+          <Icon name="arrow" size={16} />
+        </a>
+      </div>
+    </div>
+
+    <div class="disclaimer reveal mt-10 flex items-start gap-3 rounded-[14px] border p-4 text-sm leading-relaxed">
       <Icon name="warning" size={20} class="mt-0.5 shrink-0" />
       <p>{t.disclaimer}</p>
     </div>
   </section>
 </main>
 
-<footer class="border-t border-divider">
-  <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-muted sm:flex-row sm:items-center sm:px-6">
-    <div class="flex items-center gap-2.5">
-      <Logo size={24} />
-      <span class="kicker text-strong">Symtora</span>
+<!-- ───── Footer ───── -->
+<footer class="border-t border-divider bg-card/60">
+  <div class="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
+    <div>
+      <div class="flex items-center gap-2.5">
+        <Logo size={32} />
+        <span class="kicker text-[13px] text-strong">Symtora</span>
+      </div>
+      <p class="mt-4 max-w-xs text-sm leading-relaxed text-muted">{t.hero.lead}</p>
     </div>
-    <p>© {year} <span class="font-semibold text-strong">Saimon Mahari</span> · {t.footer.project}</p>
-    <div class="flex items-center gap-4 sm:ml-auto">
-      <span>{t.footer.license}</span>
-      <a href={REPO_URL} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 font-semibold text-body hover:text-strong">
-        <Icon name="github" size={16} /> GitHub
-      </a>
+    <nav aria-label={t.footerNav.product}>
+      <p class="kicker text-muted">{t.footerNav.product}</p>
+      <ul class="mt-4 space-y-2.5 text-sm font-semibold text-body">
+        <li><a href="#features" class="hover:text-strong">{t.nav.features}</a></li>
+        <li><a href="#emergency" class="hover:text-strong">{t.nav.emergency}</a></li>
+        <li><a href="#screens" class="hover:text-strong">{t.nav.screens}</a></li>
+        <li><a href="#how" class="hover:text-strong">{t.nav.how}</a></li>
+      </ul>
+    </nav>
+    <nav aria-label={t.footerNav.project}>
+      <p class="kicker text-muted">{t.footerNav.project}</p>
+      <ul class="mt-4 space-y-2.5 text-sm font-semibold text-body">
+        <li><a href={REPO_URL} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 hover:text-strong"><Icon name="github" size={15} /> {t.footerNav.source}</a></li>
+        <li><a href={`${REPO_URL}/blob/main/LICENSE`} target="_blank" rel="noopener" class="hover:text-strong">{t.footerNav.license}</a></li>
+        <li class="font-normal text-muted">{t.footer.project}</li>
+      </ul>
+    </nav>
+  </div>
+  <div class="border-t border-divider">
+    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-5 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <p>© {year} <span class="font-semibold text-strong">Saimon Mahari</span></p>
+      <p>{t.footer.license}</p>
     </div>
   </div>
 </footer>
 
 <style>
+  .hero-grid {
+    background-image:
+      linear-gradient(rgb(185 220 247 / 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(185 220 247 / 0.06) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 100%);
+  }
+  /* Side phones sit beside the centre one, partly tucked behind it. */
+  .fan-left { translate: calc(-50% - var(--fan-x, 120px)) 0; }
+  .fan-right { translate: calc(-50% + var(--fan-x, 120px)) 0; }
+  @media (min-width: 640px) { .fan-side { --fan-x: 190px; } }
+  @media (min-width: 768px) { .fan-side { --fan-x: 220px; } }
+  .hero-glow { background: radial-gradient(closest-side, rgb(185 220 247 / 0.22), transparent); }
+  .emergency-glow { background: radial-gradient(closest-side, rgb(226 0 26 / 0.35), transparent); }
   .disclaimer { background: #fdf4d8; border-color: #eddc9c; color: #7a5d0a; }
   :global(:root[data-theme='dark']) .disclaimer { background: #3a2f14; border-color: #5a4a1e; color: #e0b060; }
 </style>
+
+<script>
+  // Count the stats up once they scroll into view.
+  const counters = Array.from(document.querySelectorAll<HTMLElement>('[data-count]'));
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        io.unobserve(e.target);
+        const el = e.target as HTMLElement;
+        const target = Number(el.dataset.count);
+        if (reduce || target === 0) continue;
+        const start = performance.now();
+        const tick = (now: number) => {
+          const p = Math.min(1, (now - start) / 1200);
+          el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        el.textContent = '0';
+        requestAnimationFrame(tick);
+      }
+    },
+    { threshold: 0.6 },
+  );
+  counters.forEach((c) => io.observe(c));
+</script>

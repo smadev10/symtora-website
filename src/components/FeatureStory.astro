@@ -1,0 +1,164 @@
+---
+// Scroll story: on desktop one sticky phone swaps its screen as each step scrolls
+// past; on mobile every step shows its own phone inline.
+import { dict, type Lang } from '../i18n';
+import Icon from './Icon.astro';
+import Phone from './Phone.astro';
+import SectionHeader from './SectionHeader.astro';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = dict[lang];
+const themes = ['light', 'dark'] as const;
+const icons = ['info', 'mic', 'check', 'download', 'shield'] as const;
+
+const steps = t.features.map((f) => ({
+  ...f,
+  shot: 'video' in f && f.video ? undefined : f.media?.[0],
+  clip: 'video' in f && f.video ? f.video : undefined,
+}));
+---
+<section id="features" class="mx-auto max-w-6xl scroll-mt-20 px-4 py-24 sm:px-6 md:py-32">
+  <SectionHeader kicker={t.sections.features.kicker} title={t.sections.features.title} sub={t.sections.features.sub} />
+
+  <div class="story mt-16 grid gap-16 md:mt-20 md:grid-cols-[1fr_minmax(0,420px)] md:gap-20" data-story>
+    <!-- Steps -->
+    <ol class="relative space-y-20 md:space-y-0">
+      <div class="story-rail absolute left-[19px] top-2 bottom-2 hidden w-[2px] rounded-full bg-divider md:block" aria-hidden="true">
+        <div class="story-rail-fill h-full w-full origin-top rounded-full bg-accent" data-story-fill></div>
+      </div>
+      {steps.map((s, i) => (
+        <li class="story-step relative md:flex md:min-h-[78vh] md:items-center md:pl-16" data-story-step={i} id={s.id}>
+          <span class="story-dot absolute left-0 top-1/2 hidden size-10 -translate-y-1/2 place-items-center rounded-[12px] md:grid" aria-hidden="true">
+            <Icon name={icons[i]} size={18} />
+          </span>
+          <div class="reveal from-left max-w-md"><div class="story-text">
+            <p class="kicker flex items-center gap-2 text-muted">
+              <span class="grid size-6 place-items-center rounded-[8px] bg-accent text-[10px] text-accent-text md:hidden">{String(i + 1).padStart(2, '0')}</span>
+              <span class="hidden md:inline">{String(i + 1).padStart(2, '0')} ·</span>
+              {s.kicker}
+            </p>
+            <h3 class="mt-3 text-3xl font-extrabold leading-tight tracking-tight text-strong sm:text-[38px]">{s.title}</h3>
+            <p class="mt-4 text-base leading-relaxed text-body sm:text-lg">{s.body}</p>
+          </div></div>
+          <div class="reveal zoom mx-auto mt-10 w-[66%] max-w-[260px] md:hidden">
+            <Phone lang={lang} shot={s.shot} video={s.clip} alt={s.title} />
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <!-- Sticky phone (desktop) -->
+    <div class="relative hidden md:block">
+      <div class="sticky top-[calc(50vh-280px)] flex justify-center">
+        <div class="story-glow" aria-hidden="true"></div>
+        <div class="w-[270px]" data-tilt>
+          <div class="phone">
+            <div class="screen relative">
+              {steps.map((s, i) => s.clip ? (
+                <div class="story-layer" data-story-layer={i} data-active={i === 0 ? '' : undefined}>
+                  <video
+                    data-themed-video
+                    data-light={`/media/video/${s.clip}-light-${lang}`}
+                    data-dark={`/media/video/${s.clip}-dark-${lang}`}
+                    poster={`/media/video/${s.clip}-light-${lang}.webp`}
+                    aria-label={s.title}
+                    muted loop playsinline preload="none"
+                  ></video>
+                </div>
+              ) : (
+                <div class="story-layer" data-story-layer={i} data-active={i === 0 ? '' : undefined}>
+                  {themes.map((theme) => (
+                    <img class={`only-${theme}`} src={`/media/${theme}/${lang}/${s.shot}.webp`} alt={s.title} width="780" height="1688" loading="lazy" decoding="async" />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .story-dot {
+    background: var(--card);
+    color: var(--muted);
+    box-shadow: 0 0 0 1px var(--divider);
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .story-step[data-current] .story-dot {
+    background: var(--accent);
+    color: var(--accent-text);
+    box-shadow: 0 0 0 6px var(--accent-soft);
+    transform: translateY(-50%) scale(1.08);
+  }
+  @media (min-width: 768px) {
+    .story-text { opacity: 0.3; transition: opacity 0.4s ease; }
+    .story-step[data-current] .story-text { opacity: 1; }
+  }
+  .story-rail-fill { transform: scaleY(var(--story, 0)); }
+
+  .story-glow {
+    position: absolute;
+    inset: 10% -30%;
+    background: radial-gradient(closest-side, var(--accent-soft), transparent);
+    opacity: 0.7;
+    z-index: -1;
+  }
+  .story-layer {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateY(6%) scale(0.97);
+    transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .story-layer[data-active] { opacity: 1; transform: none; }
+  .story-layer img, .story-layer video { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+  @media (prefers-reduced-motion: reduce) {
+    .story-layer { transform: none; }
+  }
+</style>
+
+<script>
+  const story = document.querySelector<HTMLElement>('[data-story]');
+  if (story) {
+    const steps = Array.from(story.querySelectorAll<HTMLElement>('[data-story-step]'));
+    const layers = Array.from(story.querySelectorAll<HTMLElement>('[data-story-layer]'));
+    const fill = story.querySelector<HTMLElement>('[data-story-fill]');
+    let current = -1;
+
+    const activate = (i: number) => {
+      if (i === current) return;
+      current = i;
+      steps.forEach((s, j) => s.toggleAttribute('data-current', j === i));
+      layers.forEach((l) => l.toggleAttribute('data-active', Number(l.dataset.storyLayer) === i));
+    };
+
+    // A step is current while it crosses the middle of the viewport.
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) activate(Number((e.target as HTMLElement).dataset.storyStep));
+      },
+      { rootMargin: '-50% 0px -50% 0px' },
+    );
+    steps.forEach((s) => io.observe(s));
+    activate(0);
+
+    // Rail fills with progress through the story.
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking || !fill) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        const r = story.getBoundingClientRect();
+        const p = (window.innerHeight / 2 - r.top) / r.height;
+        fill.style.setProperty('--story', String(Math.min(1, Math.max(0, p))));
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+</script>

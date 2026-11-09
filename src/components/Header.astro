@@ -14,10 +14,10 @@ const t = dict[lang];
       <span class="kicker text-[13px] text-strong">Symtora</span>
     </a>
 
-    <nav class="ml-6 hidden items-center gap-6 text-sm font-semibold text-body md:flex">
-      <a href="#features" class="hover:text-strong">{t.nav.features}</a>
-      <a href="#emergency" class="hover:text-strong">{t.nav.emergency}</a>
-      <a href="#screens" class="hover:text-strong">{t.nav.screens}</a>
+    <nav class="ml-6 hidden items-center gap-1 text-sm font-semibold text-body md:flex" data-spy-nav>
+      {(['features', 'emergency', 'screens', 'how'] as const).map((id) => (
+        <a href={`#${id}`} data-spy={id} class="spy-link rounded-full px-3 py-1.5 transition-colors hover:text-strong">{t.nav[id]}</a>
+      ))}
     </nav>
 
     <div class="ml-auto flex items-center gap-2">
@@ -59,3 +59,30 @@ const t = dict[lang];
   </div>
   <div class="scroll-progress absolute inset-x-0 bottom-[-1px] h-[2px] bg-accent" data-scroll-progress aria-hidden="true"></div>
 </header>
+
+<style>
+  .spy-link[aria-current='true'] { background: var(--badge); color: var(--text-strong); }
+</style>
+
+<script>
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-spy]'));
+  const sections = links
+    .map((a) => document.getElementById(a.dataset.spy!))
+    .filter((el): el is HTMLElement => !!el);
+  const spy = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        links.forEach((a) => a.setAttribute('aria-current', String(a.dataset.spy === e.target.id)));
+      }
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
+  sections.forEach((s) => spy.observe(s));
+  // Clear the highlight above the first section.
+  window.addEventListener('scroll', () => {
+    if (sections[0] && window.scrollY + window.innerHeight / 2 < sections[0].offsetTop) {
+      links.forEach((a) => a.setAttribute('aria-current', 'false'));
+    }
+  }, { passive: true });
+</script>
