@@ -1,0 +1,130 @@
+---
+import '../styles/global.css';
+import { dict, LANGS, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = dict[lang];
+const site = Astro.site ?? new URL('https://symtora.vercel.app');
+const canonical = new URL(`/${lang}/`, site).href;
+const ogImage = new URL(`/og-${lang}.png`, site).href;
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{t.meta.title}</title>
+    <meta name="description" content={t.meta.description} />
+    <link rel="canonical" href={canonical} />
+    {LANGS.map((l) => <link rel="alternate" hreflang={l} href={new URL(`/${l}/`, site).href} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL('/en/', site).href} />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#142939" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={t.meta.title} />
+    <meta property="og:description" content={t.meta.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === 'de' ? 'de_CH' : 'en_GB'} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Runs before paint so the page never flashes the wrong theme. -->
+    <script is:inline>
+      (function () {
+        var saved = null;
+        try { saved = localStorage.getItem('symtora-theme'); } catch (e) {}
+        var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      })();
+    </script>
+  </head>
+  <body class="min-h-dvh overflow-x-hidden">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 btn bg-accent text-accent-text">{t.a11y.skip}</a>
+    <slot />
+
+    <script>
+      const root = document.documentElement;
+
+      // Theme toggle.
+      const applyTheme = (theme: string) => {
+        root.dataset.theme = theme;
+        syncVideos();
+      };
+      document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) =>
+        btn.addEventListener('click', () => {
+          const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+          try { localStorage.setItem('symtora-theme', next); } catch {}
+          applyTheme(next);
+        }),
+      );
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        let saved: string | null = null;
+        try { saved = localStorage.getItem('symtora-theme'); } catch {}
+        if (!saved) applyTheme(e.matches ? 'dark' : 'light');
+      });
+
+      // Videos: load the variant for the active theme, play only while visible.
+      const videos = Array.from(document.querySelectorAll<HTMLVideoElement>('video[data-themed-video]'));
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const visible = new Set<HTMLVideoElement>();
+
+      function syncVideos() {
+        const theme = root.dataset.theme === 'dark' ? 'dark' : 'light';
+        for (const v of videos) {
+          const base = v.dataset[theme]!;
+          v.poster = `${base}.webp`;
+          if (!visible.has(v) && !v.src) continue;
+          const src = `${base}.mp4`;
+          if (!v.src.endsWith(src)) {
+            v.src = src;
+            if (visible.has(v) && !reduceMotion) v.play().catch(() => {});
+          }
+        }
+      }
+
+      const videoObserver = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const v = entry.target as HTMLVideoElement;
+            if (entry.isIntersecting) {
+              visible.add(v);
+              syncVideos();
+              if (!reduceMotion) v.play().catch(() => {});
+            } else {
+              visible.delete(v);
+              v.pause();
+            }
+          }
+        },
+        { rootMargin: '200px 0px' },
+      );
+      videos.forEach((v) => videoObserver.observe(v));
+      syncVideos();
+
+      // Fade sections in as they scroll into view.
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in');
+              revealObserver.unobserve(entry.target);
+            }
+          }
+        },
+        { threshold: 0.12 },
+      );
+      document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
+    </script>
+  </body>
+</html>

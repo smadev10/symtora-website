@@ -1,0 +1,16 @@
+---
+// Vercel redirects "/" by Accept-Language (vercel.json); this covers local preview and other hosts.
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Symtora</title>
+    <meta http-equiv="refresh" content="0; url=/en/" />
+    <link rel="canonical" href="/en/" />
+    <script is:inline>
+      location.replace((navigator.language || '').toLowerCase().startsWith('de') ? '/de/' : '/en/');
+    </script>
+  </head>
+  <body></body>
+</html>

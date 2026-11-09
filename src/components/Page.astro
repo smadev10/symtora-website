@@ -1,0 +1,199 @@
+---
+import { dict, REPO_URL, type Lang } from '../i18n';
+import Header from './Header.astro';
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+import Phone from './Phone.astro';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = dict[lang];
+
+const promiseIcons = ['shield', 'info', 'trash'] as const;
+const gallery = Object.entries(t.screens.items);
+const stack = ['Expo · React Native', 'ASP.NET Core', 'PostgreSQL', 'Ollama', 'Whisper', 'Docker'];
+---
+<Header lang={lang} />
+
+<main id="main">
+  <!-- Hero -->
+  <section class="relative overflow-hidden rounded-b-[36px] bg-navy text-white sm:rounded-b-[48px]">
+    <div class="pointer-events-none absolute inset-0 opacity-[0.07]" aria-hidden="true">
+      <svg class="absolute -right-24 top-10 h-[520px] w-[1100px]" viewBox="0 0 64 64" preserveAspectRatio="none">
+        <polyline points="0 35 21 35 27 20 35 45 40 33 64 33" fill="none" stroke="#b9dcf7" stroke-width="0.6" vector-effect="non-scaling-stroke" style="stroke-width:3px" />
+      </svg>
+    </div>
+
+    <div class="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-14 sm:px-6 md:grid-cols-[1.1fr_1fr] md:pb-24 md:pt-20">
+      <div class="reveal">
+        <p class="kicker text-white/60">{t.hero.kicker}</p>
+        <h1 class="mt-4 text-[40px] font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
+          {t.hero.title}
+        </h1>
+        <p class="mt-5 max-w-xl text-lg leading-relaxed text-[#cfe3f0]">{t.hero.lead}</p>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#features" class="btn bg-sky text-[#142939] hover:bg-white">
+            <Icon name="play" size={16} />
+            {t.hero.cta}
+          </a>
+          <a href={REPO_URL} target="_blank" rel="noopener" class="btn border border-white/20 text-white hover:bg-white/10">
+            <Icon name="github" size={18} />
+            {t.hero.secondary}
+          </a>
+        </div>
+
+        <ul class="mt-8 flex flex-wrap gap-2">
+          {t.hero.badges.map((b) => (
+            <li class="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-[#cfe3f0]">{b}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="reveal relative mx-auto w-full max-w-[400px] md:mr-0">
+        <Phone
+          lang={lang}
+          shot="assessment"
+          alt={t.screens.items.assessment}
+          class="absolute -left-4 top-[22%] hidden w-[60%] -rotate-6 opacity-90 sm:block md:-left-20"
+          eager
+        />
+        <Phone lang={lang} video="flow" alt={t.a11y.video} class="relative mx-auto w-[78%] sm:mr-0 sm:w-[72%]" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Promises -->
+  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20">
+    <p class="kicker reveal text-center text-muted">{t.promises.kicker}</p>
+    <div class="mt-6 grid gap-4 md:grid-cols-3">
+      {t.promises.items.map((p, i) => (
+        <div class="card reveal flex items-start gap-4 p-5" style={`transition-delay:${i * 80}ms`}>
+          <div class="grid size-10 shrink-0 place-items-center rounded-[12px] bg-badge text-accent">
+            <Icon name={promiseIcons[i]} size={20} />
+          </div>
+          <div>
+            <h2 class="text-[15px] font-bold text-strong">{p.title}</h2>
+            <p class="mt-1 text-sm leading-relaxed text-muted">{p.body}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="mx-auto max-w-6xl scroll-mt-20 space-y-20 px-4 pb-8 sm:px-6 md:space-y-28">
+    {t.features.map((f, i) => (
+      <article id={f.id} class:list={['grid items-center gap-10 md:grid-cols-2 md:gap-16', i % 2 === 1 && 'md:[&>*:first-child]:order-2']}>
+        <div class="reveal max-w-md">
+          <p class="kicker text-muted">{String(i + 1).padStart(2, '0')} · {f.kicker}</p>
+          <h2 class="mt-3 text-3xl font-extrabold leading-tight tracking-tight text-strong sm:text-[40px]">{f.title}</h2>
+          <p class="mt-4 text-base leading-relaxed text-body">{f.body}</p>
+        </div>
+
+        <div class="reveal relative mx-auto flex w-full max-w-[460px] justify-center">
+          <div class="absolute inset-x-6 top-10 bottom-4 -z-10 rounded-[40px] bg-badge" aria-hidden="true"></div>
+          {'video' in f && f.video ? (
+            <Phone lang={lang} video={f.video} alt={f.title} class="w-[64%] max-w-[270px]" />
+          ) : f.media && f.media.length > 1 ? (
+            <div class="relative flex w-full justify-center">
+              <Phone lang={lang} shot={f.media[0]} alt={f.title} class="w-[52%] max-w-[240px] -rotate-3" />
+              <Phone lang={lang} shot={f.media[1]} alt={f.title} class="-ml-[10%] mt-12 w-[52%] max-w-[240px] rotate-3" />
+            </div>
+          ) : (
+            <Phone lang={lang} shot={f.media?.[0]} alt={f.title} class="w-[64%] max-w-[270px]" />
+          )}
+        </div>
+      </article>
+    ))}
+  </section>
+
+  <!-- Emergency -->
+  <section id="emergency" class="mx-auto mt-24 max-w-6xl scroll-mt-20 px-4 sm:px-6">
+    <div class="reveal overflow-hidden rounded-[30px] bg-alarm-deep text-white">
+      <div class="grid items-center gap-10 p-6 sm:p-10 md:grid-cols-[1.3fr_1fr] md:p-14">
+        <div>
+          <p class="kicker text-white/60">{t.emergency.kicker}</p>
+          <h2 class="mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-[40px]">{t.emergency.title}</h2>
+          <p class="mt-4 max-w-md text-white/80">{t.emergency.body}</p>
+          <div class="mt-8 grid gap-3 sm:grid-cols-2">
+            {t.emergency.numbers.map((n) => (
+              <a href={`tel:${n.n}`} class="flex items-center gap-4 rounded-[18px] bg-white p-4 text-[#142939] transition-transform active:scale-[0.98]">
+                <span class="text-[26px] font-extrabold leading-none">{n.n}</span>
+                <span class="min-w-0 flex-1 text-sm font-bold leading-tight">{n.label}</span>
+                <span class="grid size-10 shrink-0 place-items-center rounded-full bg-alarm text-white">
+                  <Icon name="phone" size={18} />
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+        <div class="mx-auto w-[62%] max-w-[260px] md:w-[78%]">
+          <Phone lang={lang} shot="emergency" alt={t.emergency.kicker} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screen gallery -->
+  <section id="screens" class="mt-24 scroll-mt-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <p class="kicker reveal text-muted">{t.screens.kicker}</p>
+      <h2 class="reveal mt-3 text-3xl font-extrabold tracking-tight text-strong sm:text-[40px]">{t.screens.title}</h2>
+    </div>
+    <div class="snap-strip mt-8 flex gap-6 overflow-x-auto px-4 pb-10 pt-2 sm:px-[max(1.5rem,calc((100vw-72rem)/2+1.5rem))]">
+      {gallery.map(([shot, label]) => (
+        <figure class="w-[190px] shrink-0 sm:w-[220px]">
+          <Phone lang={lang} shot={shot} alt={label} />
+          <figcaption class="mt-3 text-center text-sm font-semibold text-body">{label}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <p class="kicker reveal text-muted">{t.how.kicker}</p>
+    <ol class="mt-6 grid gap-4 md:grid-cols-3">
+      {t.how.steps.map((s, i) => (
+        <li class="card reveal flex items-center gap-4 p-5">
+          <span class="grid size-10 shrink-0 place-items-center rounded-[12px] bg-accent text-sm font-extrabold text-accent-text">{i + 1}</span>
+          <span class="font-bold text-strong">{s}</span>
+        </li>
+      ))}
+    </ol>
+    <div class="reveal mt-8 flex flex-wrap items-center gap-2">
+      <span class="mr-2 text-sm font-semibold text-muted">{t.how.stack}</span>
+      {stack.map((s) => <span class="rounded-full bg-badge px-3 py-1.5 text-xs font-semibold text-body">{s}</span>)}
+    </div>
+  </section>
+
+  <!-- Disclaimer -->
+  <section class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+    <div class="disclaimer reveal flex items-start gap-3 rounded-[14px] border p-4 text-sm leading-relaxed">
+      <Icon name="warning" size={20} class="mt-0.5 shrink-0" />
+      <p>{t.disclaimer}</p>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-divider">
+  <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-muted sm:flex-row sm:items-center sm:px-6">
+    <div class="flex items-center gap-2.5">
+      <Logo size={24} />
+      <span class="kicker text-strong">Symtora</span>
+    </div>
+    <p>{t.footer.project}</p>
+    <div class="flex items-center gap-4 sm:ml-auto">
+      <span>{t.footer.license}</span>
+      <a href={REPO_URL} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 font-semibold text-body hover:text-strong">
+        <Icon name="github" size={16} /> GitHub
+      </a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .disclaimer { background: #fdf4d8; border-color: #eddc9c; color: #7a5d0a; }
+  :global(:root[data-theme='dark']) .disclaimer { background: #3a2f14; border-color: #5a4a1e; color: #e0b060; }
+</style>

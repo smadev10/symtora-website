@@ -1,0 +1,48 @@
+---
+// A phone bezel showing one app screen. Both theme variants are rendered; CSS
+// hides the inactive one, and lazy loading means it is never downloaded.
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  /** Screenshot name under public/media/{theme}/{lang}/ */
+  shot?: string;
+  /** Video name under public/media/video/{name}-{theme}-{lang}.mp4 */
+  video?: string;
+  alt: string;
+  eager?: boolean;
+  class?: string;
+}
+const { lang, shot, video, alt, eager = false, class: cls } = Astro.props;
+const themes = ['light', 'dark'] as const;
+---
+<div class:list={['phone', cls]}>
+  <div class="screen">
+    {shot && themes.map((theme) => (
+      <img
+        class={`only-${theme}`}
+        src={`/media/${theme}/${lang}/${shot}.webp`}
+        alt={alt}
+        width="780"
+        height="1688"
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+      />
+    ))}
+    {video && (
+      <video
+        data-themed-video
+        data-light={`/media/video/${video}-light-${lang}`}
+        data-dark={`/media/video/${video}-dark-${lang}`}
+        poster={`/media/video/${video}-light-${lang}.webp`}
+        aria-label={alt}
+        muted
+        loop
+        playsinline
+        preload="none"
+        width="600"
+        height="1298"
+      ></video>
+    )}
+  </div>
+</div>

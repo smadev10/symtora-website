@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Symtora">
+  <rect width="64" height="64" rx="16" fill="#142939"/>
+  <polyline points="9 35 21 35 27 20 35 45 40 33 55 33" fill="none" stroke="#b9dcf7"
+            stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
