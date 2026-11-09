@@ -47,7 +47,7 @@ async function prepare(context, { lang, theme, signedIn = true, consent = true, 
           JSON.stringify({
             token: 'demo-token',
             expiresAt: new Date(Date.now() + 30 * 86_400_000).toISOString(),
-            user: { email: 'lena.meier@example.ch', name: 'Lena' },
+            user: { email: 'saimon.mahari@example.ch', name: 'Saimon Mahari' },
           }),
         );
       }
@@ -70,7 +70,7 @@ async function prepare(context, { lang, theme, signedIn = true, consent = true, 
     const p = url.pathname;
 
     if (p === '/auth/login' || p === '/auth/register') {
-      return json({ token: 'demo-token', expiresAt: new Date(Date.now() + 864e5).toISOString(), name: 'Lena' });
+      return json({ token: 'demo-token', expiresAt: new Date(Date.now() + 864e5).toISOString(), name: 'Saimon Mahari' });
     }
     if (p === '/entries' && req.method() === 'GET') {
       return json([...created.values(), ...entries].map((e) => resolveEntry(e)));

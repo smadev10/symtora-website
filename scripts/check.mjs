@@ -38,10 +38,6 @@ for (const lang of ['en', 'de']) {
       // Scroll through so lazy images and videos load.
       await page.evaluate(async () => {
         for (let y = 0; y < document.body.scrollHeight; y += 500) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); }
-        for (const strip of document.querySelectorAll('.snap-strip')) {
-          for (let x = 0; x < strip.scrollWidth; x += 300) { strip.scrollLeft = x; await new Promise((r) => setTimeout(r, 80)); }
-          strip.scrollLeft = 0;
-        }
         for (const el of document.querySelectorAll('.reveal')) el.classList.add('in');
       });
       await page.waitForLoadState('networkidle');
@@ -50,6 +46,13 @@ for (const lang of ['en', 'de']) {
       check(badImgs.length === 0, `${label}: visible images loaded ${badImgs.join(' ')}`);
       check(broken.length === 0, `${label}: no 4xx/5xx ${broken.join(' ')}`);
       check(errors.length === 0, `${label}: no JS errors ${errors.join(' ')}`);
+
+      // Screen tour: next button switches the screen.
+      const before = await page.$eval('[data-tour-tab][aria-selected="true"]', (b) => b.dataset.tourTab);
+      await page.click('[data-tour-next]');
+      const after = await page.$eval('[data-tour-tab][aria-selected="true"]', (b) => b.dataset.tourTab);
+      check(before !== after, `${label}: tour next switches screen`);
+      check(await page.$eval('footer', (f) => f.textContent.includes('Saimon Mahari')), `${label}: footer credit`);
 
       if (device === 'desktop') {
         await page.evaluate(() => window.scrollTo(0, 0));

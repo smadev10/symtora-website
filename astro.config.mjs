@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  site: 'https://symtora.vercel.app',
+  site: 'https://symtora-website.vercel.app',
   i18n: {
     locales: ['en', 'de'],
     defaultLocale: 'en',

@@ -5,7 +5,7 @@ import { dict, LANGS, type Lang } from '../i18n';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = dict[lang];
-const site = Astro.site ?? new URL('https://symtora.vercel.app');
+const site = Astro.site ?? new URL('https://symtora-website.vercel.app');
 const canonical = new URL(`/${lang}/`, site).href;
 const ogImage = new URL(`/og-${lang}.png`, site).href;
 ---
@@ -125,6 +125,47 @@ const ogImage = new URL(`/og-${lang}.png`, site).href;
         { threshold: 0.12 },
       );
       document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
+
+      // Scroll-linked: progress bar + parallax, batched into one frame.
+      const progress = document.querySelector<HTMLElement>('[data-scroll-progress]');
+      const parallax = reduceMotion ? [] : Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));
+      let ticking = false;
+      const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          ticking = false;
+          const max = document.documentElement.scrollHeight - window.innerHeight;
+          progress?.style.setProperty('--progress', String(max > 0 ? window.scrollY / max : 0));
+          const mid = window.innerHeight / 2;
+          for (const el of parallax) {
+            const r = el.getBoundingClientRect();
+            if (r.bottom < -200 || r.top > window.innerHeight + 200) continue;
+            const offset = r.top + r.height / 2 - mid;
+            el.style.setProperty('--py', `${(-offset * Number(el.dataset.parallax)).toFixed(1)}px`);
+          }
+        });
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      onScroll();
+
+      // Pointer tilt on phones (mouse only).
+      if (!reduceMotion && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((el) => {
+          el.addEventListener('pointermove', (e) => {
+            const r = el.getBoundingClientRect();
+            const x = (e.clientX - r.left) / r.width - 0.5;
+            const y = (e.clientY - r.top) / r.height - 0.5;
+            el.style.setProperty('--ry', `${(x * 14).toFixed(2)}deg`);
+            el.style.setProperty('--rx', `${(-y * 10).toFixed(2)}deg`);
+          });
+          el.addEventListener('pointerleave', () => {
+            el.style.setProperty('--ry', '0deg');
+            el.style.setProperty('--rx', '0deg');
+          });
+        });
+      }
     </script>
   </body>
 </html>

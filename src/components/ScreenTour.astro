@@ -1,0 +1,224 @@
+---
+// Interactive tour: one phone, a list of screens beside it. Auto-advances with a
+// progress bar on the active item, pauses on hover/focus/offscreen, supports
+// swipe, arrow keys and prev/next buttons.
+import { dict, type Lang } from '../i18n';
+import Icon from './Icon.astro';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = dict[lang];
+const screens = Object.entries(t.screens.items);
+const themes = ['light', 'dark'] as const;
+---
+<section id="screens" class="mx-auto mt-28 max-w-6xl scroll-mt-20 px-4 sm:px-6">
+  <div class="tour reveal relative overflow-hidden rounded-[30px] bg-card p-5 shadow-[var(--shadow)] sm:p-10 md:p-14" data-tour>
+    <div class="tour-glow" aria-hidden="true"></div>
+
+    <div class="relative grid items-center gap-10 md:grid-cols-[1fr_auto] md:gap-16">
+      <div class="order-2 md:order-1">
+        <p class="kicker text-muted">{t.screens.kicker}</p>
+        <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-strong sm:text-[40px]">{t.screens.title}</h2>
+
+        <ol class="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-2" role="tablist" aria-label={t.screens.kicker}>
+          {screens.map(([key, label], i) => (
+            <li role="presentation">
+              <button
+                type="button"
+                role="tab"
+                id={`tour-tab-${key}`}
+                aria-controls="tour-phone"
+                aria-selected={i === 0 ? 'true' : 'false'}
+                tabindex={i === 0 ? 0 : -1}
+                data-tour-tab={i}
+                class="tour-tab group relative flex w-full items-center gap-3 overflow-hidden rounded-[14px] px-3 py-2.5 text-left"
+              >
+                <span class="tour-num grid size-7 shrink-0 place-items-center rounded-[9px] text-[11px] font-extrabold">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span class="truncate text-sm font-semibold">{label}</span>
+                <span class="tour-bar" aria-hidden="true"></span>
+              </button>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="order-1 mx-auto flex flex-col items-center md:order-2">
+        <div class="phone tour-phone w-[230px] sm:w-[260px]" id="tour-phone" role="tabpanel" aria-live="polite">
+          <div class="screen relative">
+            {screens.map(([key, label], i) => themes.map((theme) => (
+              <img
+                class={`tour-img only-${theme}`}
+                data-tour-img={i}
+                data-active={i === 0 ? 'true' : undefined}
+                src={`/media/${theme}/${lang}/${key}.webp`}
+                alt={label}
+                width="780"
+                height="1688"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              />
+            )))}
+          </div>
+        </div>
+
+        <div class="mt-6 flex items-center gap-4">
+          <button type="button" data-tour-prev aria-label="←" class="tour-nav grid size-11 place-items-center rounded-full">
+            <Icon name="arrow" size={18} class="rotate-180" />
+          </button>
+          <span class="min-w-[4.5rem] text-center text-sm font-bold tabular-nums text-muted">
+            <span data-tour-count class="text-strong">01</span> / {String(screens.length).padStart(2, '0')}
+          </span>
+          <button type="button" data-tour-next aria-label="→" class="tour-nav grid size-11 place-items-center rounded-full">
+            <Icon name="arrow" size={18} />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tour-glow {
+    position: absolute;
+    inset: auto -20% -60% 30%;
+    height: 120%;
+    background: radial-gradient(closest-side, var(--accent-soft), transparent);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .tour-tab {
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--divider);
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tour-tab:hover { border-color: var(--accent); }
+  .tour-tab:active { transform: scale(0.97); }
+  .tour-tab .tour-num { background: var(--badge); color: var(--accent); transition: inherit; }
+  .tour-tab[aria-selected='true'] {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--text-strong);
+  }
+  .tour-tab[aria-selected='true'] .tour-num { background: var(--accent); color: var(--accent-text); }
+
+  .tour-bar {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  [data-tour][data-playing] .tour-tab[aria-selected='true'] .tour-bar {
+    animation: tour-progress var(--tour-ms, 3600ms) linear forwards;
+  }
+  [data-tour][data-paused] .tour-tab[aria-selected='true'] .tour-bar { animation-play-state: paused; }
+  @keyframes tour-progress { to { transform: scaleX(1); } }
+
+  .tour-phone { touch-action: pan-y; user-select: none; }
+  .tour-img {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateX(calc(var(--dir, 1) * 14%)) scale(0.96);
+    transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .tour-img[data-active] { opacity: 1; transform: none; }
+  .tour-img[data-leaving] { opacity: 0; transform: translateX(calc(var(--dir, 1) * -14%)) scale(0.96); }
+
+  .tour-nav {
+    background: var(--inset);
+    color: var(--text-strong);
+    transition: background-color 0.2s ease, transform 0.15s ease;
+  }
+  .tour-nav:hover { background: var(--accent); color: var(--accent-text); }
+  .tour-nav:active { transform: scale(0.92); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tour-img { transition: opacity 0.2s ease; transform: none !important; }
+  }
+</style>
+
+<script>
+  const tour = document.querySelector<HTMLElement>('[data-tour]');
+  if (tour) {
+    const tabs = Array.from(tour.querySelectorAll<HTMLButtonElement>('[data-tour-tab]'));
+    const imgs = Array.from(tour.querySelectorAll<HTMLImageElement>('[data-tour-img]'));
+    const count = tour.querySelector<HTMLElement>('[data-tour-count]')!;
+    const phone = tour.querySelector<HTMLElement>('.tour-phone')!;
+    const DURATION = 3600;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let index = 0;
+    let timer: number | undefined;
+    let hovering = false;
+    let inView = false;
+    let userStopped = reduce;
+
+    tour.style.setProperty('--tour-ms', `${DURATION}ms`);
+
+    const go = (next: number, fromUser = false) => {
+      const n = (next + tabs.length) % tabs.length;
+      if (n === index) return;
+      const dir = n > index || (index === tabs.length - 1 && n === 0) ? 1 : -1;
+      tour.style.setProperty('--dir', String(dir));
+      imgs.forEach((img) => {
+        const i = Number(img.dataset.tourImg);
+        img.removeAttribute('data-leaving');
+        if (i === index) { img.removeAttribute('data-active'); img.setAttribute('data-leaving', ''); }
+        if (i === n) img.setAttribute('data-active', '');
+      });
+      tabs[index].setAttribute('aria-selected', 'false');
+      tabs[index].tabIndex = -1;
+      tabs[n].setAttribute('aria-selected', 'true');
+      tabs[n].tabIndex = 0;
+      index = n;
+      count.textContent = String(n + 1).padStart(2, '0');
+      if (fromUser) userStopped = true;
+      schedule();
+    };
+
+    function schedule() {
+      window.clearTimeout(timer);
+      tour!.removeAttribute('data-playing');
+      const playing = !userStopped && inView;
+      if (!playing) return;
+      // Re-trigger the progress bar animation on the active tab.
+      void tour!.offsetWidth;
+      tour!.setAttribute('data-playing', '');
+      if (hovering) { tour!.setAttribute('data-paused', ''); return; }
+      tour!.removeAttribute('data-paused');
+      timer = window.setTimeout(() => go(index + 1), DURATION);
+    }
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => go(i, true));
+      tab.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); go(index + 1, true); tabs[index].focus(); }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); go(index - 1, true); tabs[index].focus(); }
+      });
+    });
+    tour.querySelector('[data-tour-prev]')!.addEventListener('click', () => go(index - 1, true));
+    tour.querySelector('[data-tour-next]')!.addEventListener('click', () => go(index + 1, true));
+
+    phone.addEventListener('mouseenter', () => { hovering = true; schedule(); });
+    phone.addEventListener('mouseleave', () => { hovering = false; schedule(); });
+
+    // Swipe on the phone.
+    let startX = 0;
+    let startY = 0;
+    phone.addEventListener('pointerdown', (e) => { startX = e.clientX; startY = e.clientY; });
+    phone.addEventListener('pointerup', (e) => {
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(e.clientY - startY)) go(index + (dx < 0 ? 1 : -1), true);
+    });
+
+    new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; schedule(); }, { threshold: 0.35 }).observe(tour);
+  }
+</script>

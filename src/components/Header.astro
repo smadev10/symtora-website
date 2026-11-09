@@ -10,7 +10,7 @@ const t = dict[lang];
 <header class="sticky top-0 z-40 border-b border-divider/70 bg-bg/80 backdrop-blur-md supports-[backdrop-filter]:bg-bg/70">
   <div class="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:px-6">
     <a href={`/${lang}/`} class="flex items-center gap-2.5" aria-label="Symtora">
-      <Logo size={32} />
+      <Logo size={32} animate />
       <span class="kicker text-[13px] text-strong">Symtora</span>
     </a>
 
@@ -57,4 +57,5 @@ const t = dict[lang];
       </a>
     </div>
   </div>
+  <div class="scroll-progress absolute inset-x-0 bottom-[-1px] h-[2px] bg-accent" data-scroll-progress aria-hidden="true"></div>
 </header>

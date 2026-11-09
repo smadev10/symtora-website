@@ -4,35 +4,38 @@ import Header from './Header.astro';
 import Icon from './Icon.astro';
 import Logo from './Logo.astro';
 import Phone from './Phone.astro';
+import ScreenTour from './ScreenTour.astro';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = dict[lang];
 
 const promiseIcons = ['shield', 'info', 'trash'] as const;
-const gallery = Object.entries(t.screens.items);
 const stack = ['Expo · React Native', 'ASP.NET Core', 'PostgreSQL', 'Ollama', 'Whisper', 'Docker'];
+const titleWords = t.hero.title.split(' ');
+const year = new Date().getFullYear();
 ---
 <Header lang={lang} />
 
-<main id="main">
+<main id="main" class="overflow-x-clip">
   <!-- Hero -->
   <section class="relative overflow-hidden rounded-b-[36px] bg-navy text-white sm:rounded-b-[48px]">
-    <div class="pointer-events-none absolute inset-0 opacity-[0.07]" aria-hidden="true">
-      <svg class="absolute -right-24 top-10 h-[520px] w-[1100px]" viewBox="0 0 64 64" preserveAspectRatio="none">
-        <polyline points="0 35 21 35 27 20 35 45 40 33 64 33" fill="none" stroke="#b9dcf7" stroke-width="0.6" vector-effect="non-scaling-stroke" style="stroke-width:3px" />
-      </svg>
-    </div>
+    <svg class="pointer-events-none absolute inset-x-0 top-[46%] h-[220px] w-full md:top-[40%]" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true">
+      <polyline class="ecg-base" pathLength="1" points="0 12 30 12 34 12 37 4 41 18 44 9 47 12 62 12 65 12 67 7 69 15 71 12 100 12" fill="none" stroke="#b9dcf7" stroke-opacity="0.12" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" />
+      <polyline class="ecg-pulse" pathLength="1" points="0 12 30 12 34 12 37 4 41 18 44 9 47 12 62 12 65 12 67 7 69 15 71 12 100 12" fill="none" stroke="#b9dcf7" stroke-opacity="0.55" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
 
     <div class="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-14 sm:px-6 md:grid-cols-[1.1fr_1fr] md:pb-24 md:pt-20">
-      <div class="reveal">
-        <p class="kicker text-white/60">{t.hero.kicker}</p>
+      <div>
+        <p class="enter kicker text-white/60" style="--d:100ms">{t.hero.kicker}</p>
         <h1 class="mt-4 text-[40px] font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
-          {t.hero.title}
+          {titleWords.map((w, i) => (
+            <><span class="word" style={`--d:${200 + i * 90}ms`}>{w}</span>{i < titleWords.length - 1 ? ' ' : ''}</>
+          ))}
         </h1>
-        <p class="mt-5 max-w-xl text-lg leading-relaxed text-[#cfe3f0]">{t.hero.lead}</p>
+        <p class="enter mt-5 max-w-xl text-lg leading-relaxed text-[#cfe3f0]" style="--d:500ms">{t.hero.lead}</p>
 
-        <div class="mt-8 flex flex-wrap gap-3">
+        <div class="enter mt-8 flex flex-wrap gap-3" style="--d:650ms">
           <a href="#features" class="btn bg-sky text-[#142939] hover:bg-white">
             <Icon name="play" size={16} />
             {t.hero.cta}
@@ -44,21 +47,23 @@ const stack = ['Expo · React Native', 'ASP.NET Core', 'PostgreSQL', 'Ollama', '
         </div>
 
         <ul class="mt-8 flex flex-wrap gap-2">
-          {t.hero.badges.map((b) => (
-            <li class="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-[#cfe3f0]">{b}</li>
+          {t.hero.badges.map((b, i) => (
+            <li class="enter rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-[#cfe3f0]" style={`--d:${800 + i * 90}ms`}>{b}</li>
           ))}
         </ul>
       </div>
 
-      <div class="reveal relative mx-auto w-full max-w-[400px] md:mr-0">
-        <Phone
-          lang={lang}
-          shot="assessment"
-          alt={t.screens.items.assessment}
-          class="absolute -left-4 top-[22%] hidden w-[60%] -rotate-6 opacity-90 sm:block md:-left-20"
-          eager
-        />
-        <Phone lang={lang} video="flow" alt={t.a11y.video} class="relative mx-auto w-[78%] sm:mr-0 sm:w-[72%]" />
+      <div class="relative mx-auto w-full max-w-[400px] md:mr-0">
+        <div class="enter absolute -left-4 top-[22%] hidden w-[60%] sm:block md:-left-20" style="--d:700ms">
+          <div class="float-slow">
+            <Phone lang={lang} shot="assessment" alt={t.screens.items.assessment} class="-rotate-6 opacity-90" eager />
+          </div>
+        </div>
+        <div class="enter relative mx-auto w-[78%] sm:mr-0 sm:w-[72%]" style="--d:350ms">
+          <div class="float">
+            <Phone lang={lang} video="flow" alt={t.a11y.video} />
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -66,10 +71,10 @@ const stack = ['Expo · React Native', 'ASP.NET Core', 'PostgreSQL', 'Ollama', '
   <!-- Promises -->
   <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20">
     <p class="kicker reveal text-center text-muted">{t.promises.kicker}</p>
-    <div class="mt-6 grid gap-4 md:grid-cols-3">
+    <div class="stagger reveal mt-6 grid gap-4 md:grid-cols-3">
       {t.promises.items.map((p, i) => (
-        <div class="card reveal flex items-start gap-4 p-5" style={`transition-delay:${i * 80}ms`}>
-          <div class="grid size-10 shrink-0 place-items-center rounded-[12px] bg-badge text-accent">
+        <div class="card lift group flex items-start gap-4 p-5">
+          <div class="grid size-10 shrink-0 place-items-center rounded-[12px] bg-badge text-accent transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
             <Icon name={promiseIcons[i]} size={20} />
           </div>
           <div>
@@ -82,89 +87,97 @@ const stack = ['Expo · React Native', 'ASP.NET Core', 'PostgreSQL', 'Ollama', '
   </section>
 
   <!-- Features -->
-  <section id="features" class="mx-auto max-w-6xl scroll-mt-20 space-y-20 px-4 pb-8 sm:px-6 md:space-y-28">
-    {t.features.map((f, i) => (
-      <article id={f.id} class:list={['grid items-center gap-10 md:grid-cols-2 md:gap-16', i % 2 === 1 && 'md:[&>*:first-child]:order-2']}>
-        <div class="reveal max-w-md">
-          <p class="kicker text-muted">{String(i + 1).padStart(2, '0')} · {f.kicker}</p>
-          <h2 class="mt-3 text-3xl font-extrabold leading-tight tracking-tight text-strong sm:text-[40px]">{f.title}</h2>
-          <p class="mt-4 text-base leading-relaxed text-body">{f.body}</p>
-        </div>
+  <section id="features" class="mx-auto max-w-6xl scroll-mt-20 space-y-24 px-4 pb-8 sm:px-6 md:space-y-32">
+    {t.features.map((f, i) => {
+      const flip = i % 2 === 1;
+      return (
+        <article id={f.id} class:list={['grid items-center gap-10 md:grid-cols-2 md:gap-16', flip && 'md:[&>*:first-child]:order-2']}>
+          <div class:list={['reveal max-w-md', flip ? 'from-right' : 'from-left']}>
+            <p class="kicker flex items-center gap-2 text-muted">
+              <span class="grid size-6 place-items-center rounded-[8px] bg-accent text-[10px] text-accent-text">{String(i + 1).padStart(2, '0')}</span>
+              {f.kicker}
+            </p>
+            <h2 class="mt-3 text-3xl font-extrabold leading-tight tracking-tight text-strong sm:text-[40px]">{f.title}</h2>
+            <p class="mt-4 text-base leading-relaxed text-body">{f.body}</p>
+          </div>
 
-        <div class="reveal relative mx-auto flex w-full max-w-[460px] justify-center">
-          <div class="absolute inset-x-6 top-10 bottom-4 -z-10 rounded-[40px] bg-badge" aria-hidden="true"></div>
-          {'video' in f && f.video ? (
-            <Phone lang={lang} video={f.video} alt={f.title} class="w-[64%] max-w-[270px]" />
-          ) : f.media && f.media.length > 1 ? (
-            <div class="relative flex w-full justify-center">
-              <Phone lang={lang} shot={f.media[0]} alt={f.title} class="w-[52%] max-w-[240px] -rotate-3" />
-              <Phone lang={lang} shot={f.media[1]} alt={f.title} class="-ml-[10%] mt-12 w-[52%] max-w-[240px] rotate-3" />
+          <div class="reveal zoom relative mx-auto flex w-full max-w-[460px] justify-center">
+            <div class="absolute inset-x-6 top-10 bottom-4 -z-10 rounded-[40px] bg-badge" data-parallax="-0.06" aria-hidden="true"></div>
+            <div class="flex w-full justify-center" data-parallax="0.05">
+              {'video' in f && f.video ? (
+                <div class="w-[64%] max-w-[270px]" data-tilt>
+                  <Phone lang={lang} video={f.video} alt={f.title} />
+                </div>
+              ) : f.media && f.media.length > 1 ? (
+                <div class="relative flex w-full justify-center" data-tilt>
+                  <Phone lang={lang} shot={f.media[0]} alt={f.title} class="w-[52%] max-w-[240px] -rotate-3" />
+                  <div class="-ml-[10%] mt-12 w-[52%] max-w-[240px]" data-parallax="0.08">
+                    <Phone lang={lang} shot={f.media[1]} alt={f.title} class="rotate-3" />
+                  </div>
+                </div>
+              ) : (
+                <div class="w-[64%] max-w-[270px]" data-tilt>
+                  <Phone lang={lang} shot={f.media?.[0]} alt={f.title} />
+                </div>
+              )}
             </div>
-          ) : (
-            <Phone lang={lang} shot={f.media?.[0]} alt={f.title} class="w-[64%] max-w-[270px]" />
-          )}
-        </div>
-      </article>
-    ))}
+          </div>
+        </article>
+      );
+    })}
   </section>
 
   <!-- Emergency -->
-  <section id="emergency" class="mx-auto mt-24 max-w-6xl scroll-mt-20 px-4 sm:px-6">
-    <div class="reveal overflow-hidden rounded-[30px] bg-alarm-deep text-white">
+  <section id="emergency" class="mx-auto mt-28 max-w-6xl scroll-mt-20 px-4 sm:px-6">
+    <div class="reveal zoom overflow-hidden rounded-[30px] bg-alarm-deep text-white">
       <div class="grid items-center gap-10 p-6 sm:p-10 md:grid-cols-[1.3fr_1fr] md:p-14">
         <div>
           <p class="kicker text-white/60">{t.emergency.kicker}</p>
           <h2 class="mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-[40px]">{t.emergency.title}</h2>
           <p class="mt-4 max-w-md text-white/80">{t.emergency.body}</p>
-          <div class="mt-8 grid gap-3 sm:grid-cols-2">
-            {t.emergency.numbers.map((n) => (
-              <a href={`tel:${n.n}`} class="flex items-center gap-4 rounded-[18px] bg-white p-4 text-[#142939] transition-transform active:scale-[0.98]">
+          <div class="stagger reveal mt-8 grid gap-3 sm:grid-cols-2">
+            {t.emergency.numbers.map((n, i) => (
+              <div class="flex cursor-default select-none items-center gap-4 rounded-[18px] bg-white p-4 text-[#142939]">
                 <span class="text-[26px] font-extrabold leading-none">{n.n}</span>
                 <span class="min-w-0 flex-1 text-sm font-bold leading-tight">{n.label}</span>
-                <span class="grid size-10 shrink-0 place-items-center rounded-full bg-alarm text-white">
+                <span class="ring grid size-10 shrink-0 place-items-center rounded-full bg-alarm text-white" style={`--d:${i * 600}ms`}>
                   <Icon name="phone" size={18} />
                 </span>
-              </a>
+              </div>
             ))}
           </div>
         </div>
-        <div class="mx-auto w-[62%] max-w-[260px] md:w-[78%]">
-          <Phone lang={lang} shot="emergency" alt={t.emergency.kicker} />
+        <div class="mx-auto w-[62%] max-w-[260px] md:w-[78%]" data-parallax="0.06">
+          <div class="float" data-tilt>
+            <Phone lang={lang} shot="emergency" alt={t.emergency.kicker} />
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Screen gallery -->
-  <section id="screens" class="mt-24 scroll-mt-20">
-    <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <p class="kicker reveal text-muted">{t.screens.kicker}</p>
-      <h2 class="reveal mt-3 text-3xl font-extrabold tracking-tight text-strong sm:text-[40px]">{t.screens.title}</h2>
-    </div>
-    <div class="snap-strip mt-8 flex gap-6 overflow-x-auto px-4 pb-10 pt-2 sm:px-[max(1.5rem,calc((100vw-72rem)/2+1.5rem))]">
-      {gallery.map(([shot, label]) => (
-        <figure class="w-[190px] shrink-0 sm:w-[220px]">
-          <Phone lang={lang} shot={shot} alt={label} />
-          <figcaption class="mt-3 text-center text-sm font-semibold text-body">{label}</figcaption>
-        </figure>
-      ))}
-    </div>
-  </section>
+  <!-- Screen tour -->
+  <ScreenTour lang={lang} />
 
   <!-- How it works -->
-  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+  <section class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
     <p class="kicker reveal text-muted">{t.how.kicker}</p>
-    <ol class="mt-6 grid gap-4 md:grid-cols-3">
-      {t.how.steps.map((s, i) => (
-        <li class="card reveal flex items-center gap-4 p-5">
-          <span class="grid size-10 shrink-0 place-items-center rounded-[12px] bg-accent text-sm font-extrabold text-accent-text">{i + 1}</span>
-          <span class="font-bold text-strong">{s}</span>
-        </li>
-      ))}
-    </ol>
-    <div class="reveal mt-8 flex flex-wrap items-center gap-2">
+    <div class="reveal relative mt-6">
+      <div class="absolute left-[16%] right-[16%] top-1/2 hidden h-[2px] -translate-y-1/2 overflow-hidden rounded-full bg-divider md:block" aria-hidden="true">
+        <div class="connector h-full w-full bg-accent"></div>
+      </div>
+      <ol class="stagger reveal relative grid gap-4 md:grid-cols-3">
+        {t.how.steps.map((s, i) => (
+          <li class="card lift flex items-center gap-4 p-5">
+            <span class="grid size-10 shrink-0 place-items-center rounded-[12px] bg-accent text-sm font-extrabold text-accent-text">{i + 1}</span>
+            <span class="font-bold text-strong">{s}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+    <div class="stagger reveal mt-8 flex flex-wrap items-center gap-2">
       <span class="mr-2 text-sm font-semibold text-muted">{t.how.stack}</span>
-      {stack.map((s) => <span class="rounded-full bg-badge px-3 py-1.5 text-xs font-semibold text-body">{s}</span>)}
+      {stack.map((s) => <span class="rounded-full bg-badge px-3 py-1.5 text-xs font-semibold text-body transition-colors hover:bg-accent hover:text-accent-text">{s}</span>)}
     </div>
   </section>
 
@@ -183,7 +196,7 @@ const stack = ['Expo · React Native', 'ASP.NET Core', 'PostgreSQL', 'Ollama', '
       <Logo size={24} />
       <span class="kicker text-strong">Symtora</span>
     </div>
-    <p>{t.footer.project}</p>
+    <p>© {year} <span class="font-semibold text-strong">Saimon Mahari</span> · {t.footer.project}</p>
     <div class="flex items-center gap-4 sm:ml-auto">
       <span>{t.footer.license}</span>
       <a href={REPO_URL} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 font-semibold text-body hover:text-strong">
