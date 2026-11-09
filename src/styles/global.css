@@ -75,7 +75,10 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  /* The progress bar under the header replaces the native scrollbar. */
+  scrollbar-width: none;
 }
+html::-webkit-scrollbar { display: none; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
